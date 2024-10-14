@@ -10,14 +10,15 @@ document.getElementById('btn_emailToken').addEventListener('click', function () 
             })
           .then(function (response) {
               if (!response.ok)
-                messageDisplay.textContent = '오류가 발생했습니다.';
-
+              {
+                   throw "에러 발생";
+              }
               return response.json();
            })
           .then(function (data) {
               messageDisplay.textContent = data.msg;
           })
           .catch(function (error) {
-              messageDisplay.textContent = '오류가 발생했습니다.'; // 에러 처리
+              messageDisplay.textContent = '오류가 발생했습니다.';
           });
   });

@@ -39,7 +39,7 @@ public class LoginTest {
                         .param("password", "dwc02207!")
                         .with(csrf()))
                 .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/main"));
+                .andExpect(redirectedUrl("/"));
     }
 
     @DisplayName("로그인 - 이메일이 유효하지 않음")

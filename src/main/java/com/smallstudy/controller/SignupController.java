@@ -5,7 +5,7 @@ package com.smallstudy.controller;
 import com.smallstudy.dto.LoginDTO;
 import com.smallstudy.dto.SignupDTO;
 
-import com.smallstudy.error.errordto.EmailSendErrorDTO;
+import com.smallstudy.dto.EmailSendErrorDTO;
 import com.smallstudy.service.MemberService;
 import com.smallstudy.validator.GlobalValidationService;
 import com.smallstudy.validator.SignupValidator;
@@ -52,12 +52,17 @@ public class SignupController {
 
         if(memberService.duplicatedEmail(dto.getUsername())) {
             model.addAttribute("form", dto);
-            errors.reject("duplication.username");
+            errors.rejectValue("username", "duplicated");
             return "/smallstudy/signup";
         }
 
-        boolean isok = memberService.emailValidAndSignup(dto.maptoMember());
-        if(!isok) {
+        if(memberService.duplicatedNickname(dto.getNickname())) {
+            model.addAttribute("form", dto);
+            errors.rejectValue("nickname", "duplicated");
+            return "/smallstudy/signup";
+        }
+
+        if(memberService.emailValidAndSignup(dto.maptoMember())) {
             model.addAttribute("form", dto);
             errors.rejectValue("emailToken", "invalid");
             return "/smallstudy/signup";
@@ -82,7 +87,7 @@ public class SignupController {
         }
 
         if(memberService.duplicatedEmail(email)) {
-            String msg = messageSource.getMessage("duplication.username", null, Locale.getDefault());
+            String msg = messageSource.getMessage("duplicated.form.username", null, Locale.getDefault());
             return new EmailSendErrorDTO(101, msg);
         }
 

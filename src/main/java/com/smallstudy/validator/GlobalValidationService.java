@@ -19,5 +19,4 @@ public class GlobalValidationService {
         return GlobalValidationService.PASSWORD_PATTERN.matcher(password).matches();
     }
 
-
 }

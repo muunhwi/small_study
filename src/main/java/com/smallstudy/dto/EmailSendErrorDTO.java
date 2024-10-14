@@ -1,4 +1,4 @@
-package com.smallstudy.error.errordto;
+package com.smallstudy.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

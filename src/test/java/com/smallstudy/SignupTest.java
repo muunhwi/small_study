@@ -137,17 +137,17 @@ class SignupTest {
     void 정상회원가입() throws Exception
     {
         mockMvc.perform(post("/email-token")
-                        .param("username", "test2@gmail.com")
+                        .param("username", "test4@gmail.com")
                         .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.errorCode").value(0));
 
-        Optional<Member> findMember = memberRepository.findByEmail("test2@gmail.com");
+        Optional<Member> findMember = memberRepository.findByEmail("test4@gmail.com");
         Assertions.assertTrue(findMember.isPresent(), "맴버는 널이 아니여야 한다.");
 
         Member member = findMember.get();
         mockMvc.perform(post("/signup")
-                        .param("username", "test2@gmail.com")
+                        .param("username", "test4@gmail.com")
                         .param("password", "test0123!")
                         .param("nickname", "test")
                         .param("emailToken", member.getEmailToken())
@@ -162,6 +162,31 @@ class SignupTest {
     void 올바르지_않은_토큰_회원가입() throws Exception
     {
         mockMvc.perform(post("/email-token")
+                        .param("username", "test3@gmail.com")
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.errorCode").value(0));
+
+        Optional<Member> findMember = memberRepository.findByEmail("test3@gmail.com");
+        Assertions.assertTrue(findMember.isPresent(), "맴버는 널이 아니여야 한다.");
+
+        Member member = findMember.get();
+        mockMvc.perform(post("/signup")
+                        .param("username", "test3@gmail.com")
+                        .param("password", "test0123!")
+                        .param("nickname", "test")
+                        .param("emailToken", "asdada123")
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(model().attributeHasFieldErrors("form", "emailToken"));
+
+    }
+
+    @DisplayName("회원가입 - 중복 닉네임")
+    @Test
+    void 중복닉네임() throws Exception
+    {
+        mockMvc.perform(post("/email-token")
                         .param("username", "test2@gmail.com")
                         .with(csrf()))
                 .andExpect(status().isOk())
@@ -174,13 +199,16 @@ class SignupTest {
         mockMvc.perform(post("/signup")
                         .param("username", "test2@gmail.com")
                         .param("password", "test0123!")
-                        .param("nickname", "test")
-                        .param("emailToken", "asdada123")
+                        .param("nickname", "admin")
+                        .param("emailToken", member.getEmailToken())
                         .with(csrf()))
                 .andExpect(status().isOk())
-                .andExpect(model().attributeHasFieldErrors("form", "emailToken"));
+                .andExpect(model().attributeHasFieldErrors("form", "nickname"));
 
     }
+
+
+
 
 
 }

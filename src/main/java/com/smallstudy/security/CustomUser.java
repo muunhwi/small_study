@@ -1,13 +1,12 @@
-package com.smallstudy.config;
+package com.smallstudy.security;
 
 import com.smallstudy.domain.Member;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
+import java.io.File;
+import java.util.*;
 
 public class CustomUser extends Member implements UserDetails {
 
@@ -15,7 +14,7 @@ public class CustomUser extends Member implements UserDetails {
             .unmodifiableList(AuthorityUtils.createAuthorityList("ROLE_USER"));
 
     public CustomUser(Member member) {
-        super(member);
+        super.copy(member);
     }
 
     @Override
@@ -26,6 +25,16 @@ public class CustomUser extends Member implements UserDetails {
     @Override
     public String getUsername() {
         return getEmail();
+    }
+
+    public String getImageFilePath() {
+        String imgPath = getImgPath();
+        String uuid = getImgUuid();
+
+        if(Objects.isNull(imgPath) || Objects.isNull(uuid))
+            return null;
+
+        return imgPath + File.separator + uuid;
     }
 
     @Override
