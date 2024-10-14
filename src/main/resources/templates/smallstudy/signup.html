@@ -22,7 +22,7 @@
 
       <div class="mb-4">
         <label for="emailToken" class="text-center">이메일 인증</label>
-        <input type="text" id="emailToken" th:field="*{emailToken}" placeholder="Enter verification code" class="input_default" />
+        <input disabled type="text" id="emailToken" th:field="*{emailToken}" placeholder="Enter verification code" class="input_default" />
         <button type="button" id="btn_emailToken" class="btn_default">인증 요청</button>
         <span id="emailSendError"></span>
         <div class="text_warn" th:errors="*{emailToken}">이메일 오류</div>

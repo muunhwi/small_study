@@ -69,6 +69,7 @@ public class MemberService {
 
         member.setEmailToken(token);
         member.setEmailTokenReceivedAt(LocalDateTime.now());
+        memberRepository.save(member);
     }
 
     @Transactional

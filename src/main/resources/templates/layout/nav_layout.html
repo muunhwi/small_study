@@ -40,15 +40,19 @@
                                 <a th:href="@{/profile}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">프로필</a>
                             </li>
                             <li>
-                                <a th:href="@{/logout}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">logout</a>
+                                <a th:href="@{/logout}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 dark:text-gray-200 dark:hover:text-white">로그아웃</a>
                             </li>
                         </ul>
                     </div>
                 </div>
-                <div th:if="${#authentication == null}" class="flex">
-                    <a th:href="@{/login}" class="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">로그인</a>
+                <div th:if="${#authentication == null}" class="flex items-center space-x-2">
+                    <a th:href="@{/login}" class="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
+                        로그인
+                    </a>
                     <span class="text-sm text-gray-500"> / </span>
-                    <a th:href="@{/signup}" class="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">회원가입</a>
+                    <a th:href="@{/signup}" class="text-sm text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-300">
+                        회원가입
+                    </a>
                 </div>
             </div>
         </div>

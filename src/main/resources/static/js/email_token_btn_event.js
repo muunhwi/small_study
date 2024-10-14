@@ -16,6 +16,7 @@ document.getElementById('btn_emailToken').addEventListener('click', function () 
               return response.json();
            })
           .then(function (data) {
+              document.getElementById("emailToken").removeAttribute("disabled");
               messageDisplay.textContent = data.msg;
           })
           .catch(function (error) {
