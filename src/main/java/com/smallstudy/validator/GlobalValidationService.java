@@ -1,9 +1,15 @@
 package com.smallstudy.validator;
 
-import org.springframework.validation.Errors;
 
+import com.smallstudy.domain.study_entity.Study;
+import com.smallstudy.error.RuntimeAccessDeniedException;
+import com.smallstudy.security.CustomUser;
+import lombok.extern.slf4j.Slf4j;
+
+import java.util.Objects;
 import java.util.regex.Pattern;
 
+@Slf4j
 public class GlobalValidationService {
 
     private GlobalValidationService() {}
@@ -18,5 +24,19 @@ public class GlobalValidationService {
     public static boolean passwordValidate(String password) {
         return GlobalValidationService.PASSWORD_PATTERN.matcher(password).matches();
     }
+
+    public static void isAuthor(Long authorId, Long accessId) throws RuntimeAccessDeniedException {
+
+        if(Objects.isNull(authorId) || Objects.isNull(accessId)) {
+            log.info("isAuthor call param error");
+            throw new IllegalArgumentException();
+        }
+
+        if(!authorId.equals(accessId)) {
+            log.info(" authorId : {} accessId : {}, [AccessDeniedException]", authorId, accessId);
+            throw new RuntimeAccessDeniedException();
+        }
+    }
+
 
 }

@@ -1,30 +1,27 @@
 package com.smallstudy.service;
 
 
-import com.smallstudy.domain.Member;
+import com.smallstudy.domain.member_entity.Member;
 import com.smallstudy.dto.FileDTO;
-import com.smallstudy.dto.ProfileDTO;
-import com.smallstudy.error.UnSupportedImageFileTypeException;
-import com.smallstudy.repo.MemberRepository;
+import com.smallstudy.dto.profile_dto.ProfileDTO;
+import com.smallstudy.error.EmailSendException;
+import com.smallstudy.repo.member_repo.MemberRepository;
+import com.smallstudy.utils.EmailService;
+import com.smallstudy.utils.FileService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
+
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
 @Controller
 @RequiredArgsConstructor
@@ -32,10 +29,9 @@ import java.util.UUID;
 public class MemberService {
 
 
-    private final MultipartFileService multipartFileService;
+    private final FileService multipartFileService;
     private final MemberRepository memberRepository;
-    private final JavaMailSender mailSender;
-
+    private final EmailService emailService;
 
     public boolean duplicatedEmail(String email) {
         Optional<Member> findMember = memberRepository.findByEmail(email);
@@ -60,17 +56,26 @@ public class MemberService {
         Optional<Member> findMember = memberRepository.findByEmail(email);
         Member member = findMember.orElseGet(() -> new Member(email, ""));
 
-        SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(email);
-        message.setFrom("test@gmail.com");
-        message.setSubject("스몰 스터디 이메일 확인 메일");
-        message.setText(String.format("토큰 코드 : [%s] 복사하여 입력해주세요!", token));
-        mailSender.send(message);
-
         member.setEmailToken(token);
         member.setEmailTokenReceivedAt(LocalDateTime.now());
         memberRepository.save(member);
+
+        CompletableFuture<Void> future = emailService.sendMail(member.getId(), email, token);
+        future.handle((result, ex) -> {
+            if(Objects.nonNull(ex)) {
+                if (ex.getCause() instanceof EmailSendException emailEx) {
+                    emailService.handleEmailSendFailure(emailEx); // 예외 처리 로직
+                } else {
+                    log.error("Unexpected exception: " + ex.getMessage());
+                }
+            } else {
+                log.info("Email sent successfully");
+            }
+            return null;
+        });
     }
+
+
 
     @Transactional
     public boolean emailValidAndSignup(Member unverifiedMember) {
@@ -88,12 +93,10 @@ public class MemberService {
         if(token.equals(unverifiedMember.getEmailToken())) {
             member.copyWithoutId(unverifiedMember);
             member.setEmailValid();
-        } else {
-            memberRepository.delete(member);
-            return true;
+            return false;
         }
 
-        return false;
+        return true;
     }
 
 
@@ -114,16 +117,12 @@ public class MemberService {
         findMember.orElseThrow(() -> new UsernameNotFoundException("해당 하는 이메일이 존재하지 않습니다."));
 
         Member member = findMember.get();
-        member.setNickname(dto.nickname);
-        member.setMessage(dto.message);
+        member.profileUpdate(dto.nickname, dto.message);
 
         MultipartFile multipartFile = dto.profileImage;
         if(!multipartFile.isEmpty()) {
-
-            FileDTO fileDTO = multipartFileService.saveImgFile(multipartFile);
-            member.setImgName(fileDTO.originalName);
-            member.setImgUuid(fileDTO.uuid);
-            member.setImgPath(fileDTO.path);
+            FileDTO fileDTO = multipartFileService.saveMultiPartFile(multipartFile);
+            member.profileUpdateImage(fileDTO.originalName, fileDTO.uuid, fileDTO.path);
         }
         return member;
     }

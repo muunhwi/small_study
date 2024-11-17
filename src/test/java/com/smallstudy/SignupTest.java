@@ -1,7 +1,7 @@
 package com.smallstudy;
 
-import com.smallstudy.domain.Member;
-import com.smallstudy.repo.MemberRepository;
+import com.smallstudy.domain.member_entity.Member;
+import com.smallstudy.repo.member_repo.MemberRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;

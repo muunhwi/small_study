@@ -1,6 +1,6 @@
 package com.smallstudy;
 
-import com.smallstudy.domain.Member;
+import com.smallstudy.domain.member_entity.Member;
 import com.smallstudy.security.CustomUser;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.DisplayName;
@@ -53,7 +53,7 @@ public class ProfileTest {
 
         mockMvc.perform(get("/profile").session(session))
                 .andExpect(status().isOk())
-                .andExpect(view().name("smallstudy/profile"))
+                .andExpect(view().name("smallstudy/profile/profile_member"))
                 .andExpect(model().attributeExists("form", "type"));
     }
 
@@ -95,10 +95,10 @@ public class ProfileTest {
         SecurityContextHolder.getContext().setAuthentication(auth);
 
         MockMultipartFile mockFile = new MockMultipartFile(
-                "profileImage",                     // 폼 필드명 (input type="file" 의 name)
-                "logo.svg",              // 업로드될 파일 이름
-                "image/svg",                // 파일의 Content-Type
-                "This is the file content".getBytes()  // 파일 내용
+                "profileImage",
+                "logo.svg",
+                "image/svg",
+                "This is the file content".getBytes()
         );
 
         mockMvc.perform(multipart("/profile")
@@ -167,7 +167,7 @@ public class ProfileTest {
                         .with(csrf())
                         .session(session))
                 .andExpect(status().isOk())
-                .andExpect(view().name("smallstudy/profile"));
+                .andExpect(view().name("smallstudy/profile/profile_member"));
 
     }
 
@@ -195,7 +195,7 @@ public class ProfileTest {
                         .with(csrf())
                         .session(session))
                 .andExpect(status().isOk())
-                .andExpect(view().name("smallstudy/profile"))
+                .andExpect(view().name("smallstudy/profile/profile_member"))
                 .andExpect(model().attributeHasFieldErrors("form","nickname"));
 
     }
@@ -224,7 +224,7 @@ public class ProfileTest {
                         .with(csrf())
                         .session(session))
                 .andExpect(status().isOk())
-                .andExpect(view().name("smallstudy/profile"))
+                .andExpect(view().name("smallstudy/profile/profile_member"))
                 .andExpect(model().attributeHasFieldErrors("form","nickname"));
 
     }
@@ -257,7 +257,7 @@ public class ProfileTest {
                         .with(csrf())
                         .session(session))
                 .andExpect(status().isOk())
-                .andExpect(view().name("smallstudy/profile"))
+                .andExpect(view().name("smallstudy/profile/profile_member"))
                 .andExpect(model().attributeHasFieldErrors("form","message"));
 
     }
@@ -287,7 +287,7 @@ public class ProfileTest {
                         .with(csrf())
                         .session(session))
                 .andExpect(status().isOk())
-                .andExpect(view().name("smallstudy/profile"))
+                .andExpect(view().name("smallstudy/profile/profile_member"))
                 .andExpect(model().attributeHasFieldErrors("form","nickname"));
 
     }

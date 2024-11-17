@@ -1,9 +1,6 @@
 package com.smallstudy.validator;
 
-import com.smallstudy.dto.CategoryItemDTO;
-import com.smallstudy.dto.ProfileDTO;
-import com.smallstudy.dto.RegionDTO;
-import com.smallstudy.dto.SignupDTO;
+import com.smallstudy.dto.profile_dto.ProfileDTO;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;

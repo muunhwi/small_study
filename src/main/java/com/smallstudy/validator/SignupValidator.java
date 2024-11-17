@@ -1,12 +1,10 @@
 package com.smallstudy.validator;
 
-import com.smallstudy.dto.SignupDTO;
+import com.smallstudy.dto.member_dto.SignupDTO;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
-
-import java.util.regex.Pattern;
 
 import static com.smallstudy.validator.GlobalValidationService.emailValidate;
 import static com.smallstudy.validator.GlobalValidationService.passwordValidate;

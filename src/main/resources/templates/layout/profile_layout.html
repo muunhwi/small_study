@@ -32,6 +32,18 @@
                class="inline-flex items-center w-full px-4 py-2 text-sm font-medium hover:bg-gray-100 hover:text-blue-700 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white rounded-b-lg">
                 계정
             </a>
+
+            <a th:href="@{/profile/table}"
+               th:classappend="${type.equals('table')} ? 'bg-gray-100 hover:text-blue-700' : ''"
+               class="inline-flex items-center w-full px-4 py-2 text-sm font-medium hover:bg-gray-100 hover:text-blue-700 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white rounded-b-lg">
+                스터디 목록
+            </a>
+
+            <a th:href="@{/profile/apply}"
+               th:classappend="${type.equals('apply')} ? 'bg-gray-100 hover:text-blue-700' : ''"
+               class="inline-flex items-center w-full px-4 py-2 text-sm font-medium hover:bg-gray-100 hover:text-blue-700 focus:ring-2 focus:ring-blue-700 focus:text-blue-700 dark:border-gray-600 dark:hover:bg-gray-600 dark:hover:text-white dark:focus:ring-gray-500 dark:focus:text-white rounded-b-lg">
+                신청한 스터디 목록
+            </a>
         </div>
         <section th:replace="${content}">
 

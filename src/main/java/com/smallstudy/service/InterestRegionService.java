@@ -1,17 +1,18 @@
 package com.smallstudy.service;
 
-import com.smallstudy.domain.InterestRegion;
-import com.smallstudy.domain.Member;
-import com.smallstudy.domain.MemberInterestRegion;
-import com.smallstudy.dto.RegionDTO;
+import com.smallstudy.domain.region_entity.InterestRegion;
+import com.smallstudy.domain.member_entity.Member;
+import com.smallstudy.domain.member_entity.MemberInterestRegion;
+
+import com.smallstudy.dto.profile_dto.RegionDTO;
 import com.smallstudy.repo.InterestRegionRepository;
-import com.smallstudy.repo.MemberInterestRegionRepository;
-import com.smallstudy.repo.MemberRepository;
+import com.smallstudy.repo.member_repo.MemberInterestRegionRepository;
+import com.smallstudy.repo.member_repo.MemberRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Comparator;
 import java.util.List;
@@ -26,11 +27,25 @@ public class InterestRegionService {
     private final InterestRegionRepository interestRegionRepository;
     private final MemberInterestRegionRepository memberInterestRegionRepository;
 
+    public static List<RegionDTO> filteredRegionDTOs(List<RegionDTO> regions, List<RegionDTO> sub) {
+        return regions.stream()
+                .filter(region -> sub.stream()
+                        .noneMatch(selected -> selected.getCode().equals(region.getCode())))
+                .sorted(Comparator.comparingLong(RegionDTO::getCode))
+                .toList();
+    }
+
+
+    public static RegionDTO toRegionDTO(InterestRegion region) {
+        return new RegionDTO(region.getId(), region.getRegion());
+    }
+
+
     public List<RegionDTO> getRegionDTOs() {
         return  interestRegionRepository
                 .findAll()
                 .stream()
-                .map(this::toRegionDTO)
+                .map(InterestRegionService::toRegionDTO)
                 .toList();
     }
 
@@ -40,32 +55,27 @@ public class InterestRegionService {
 
     @Transactional
     public List<RegionDTO> saveInterestRegion(Long memberId, Long regionCode) {
-        List<MemberInterestRegion> memberInterestRegions = memberInterestRegionRepository.findMemberInterestRegions(memberId);
-        Member member;
-        if(!memberInterestRegions.isEmpty()) {
-            for (MemberInterestRegion memberInterestRegion : memberInterestRegions) {
-                InterestRegion ir = memberInterestRegion.getInterestRegion();
-                if(regionCode.equals(ir.getId()))
-                {
-                    return memberInterestRegions
-                            .stream()
-                            .map(mir -> toRegionDTO(mir.getInterestRegion()))
-                            .sorted(Comparator.comparing(RegionDTO::getCode))
-                            .toList();
-                }
+        List<MemberInterestRegion> memberInterestRegions = memberInterestRegionRepository.findInterestRegionsWithMemberByMemberId(memberId);
+
+        for (MemberInterestRegion memberInterestRegion : memberInterestRegions) {
+            if (regionCode.equals(memberInterestRegion.getInterestRegion().getId())) {
+                return memberInterestRegions.stream()
+                        .map(mir -> toRegionDTO(mir.getInterestRegion()))
+                        .sorted(Comparator.comparing(RegionDTO::getCode))
+                        .toList();
             }
-            member = memberInterestRegions.get(0).getMember();
-        }
-        else {
-            Optional<Member> findMember = memberRepository.findById(memberId);
-            member = findMember.orElseThrow(() -> new EntityNotFoundException("EntityNotFoundException"));
         }
 
-        Optional<InterestRegion> findRegion = interestRegionRepository.findById(regionCode);
-        InterestRegion region = findRegion.orElseThrow(() -> new EntityNotFoundException("EntityNotFoundException"));
+        Member member = memberInterestRegions.isEmpty()
+                ? memberRepository.findById(memberId).orElseThrow(() -> new EntityNotFoundException("Member not found"))
+                : memberInterestRegions.get(0).getMember();
 
-        MemberInterestRegion memberInterestRegion = new MemberInterestRegion(member, region);
-        memberInterestRegionRepository.save(memberInterestRegion);
+        InterestRegion region = interestRegionRepository.findById(regionCode)
+                .orElseThrow(() -> new EntityNotFoundException("Interest region not found"));
+
+        MemberInterestRegion newMemberInterestRegion = new MemberInterestRegion(member, region);
+        memberInterestRegionRepository.save(newMemberInterestRegion);
+
         return List.of();
     }
 
@@ -74,8 +84,6 @@ public class InterestRegionService {
         memberInterestRegionRepository.deleteByMemberIdAndRegionId(memberId, regionCode);
     }
 
-    private RegionDTO toRegionDTO(InterestRegion region) {
-        return new RegionDTO(region.getId(), region.getRegion());
-    }
+
 
 }

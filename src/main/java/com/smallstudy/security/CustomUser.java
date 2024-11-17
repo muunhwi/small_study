@@ -1,6 +1,6 @@
 package com.smallstudy.security;
 
-import com.smallstudy.domain.Member;
+import com.smallstudy.domain.member_entity.Member;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.userdetails.UserDetails;

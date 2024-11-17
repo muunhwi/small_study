@@ -23,10 +23,11 @@ public class DefaultSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http.authorizeHttpRequests(at -> at
                 .requestMatchers(
-                        "/js/**", "/img/**",
+                        "/js/**", "/img/**", "/main/**",
                         "/css/**", "/node_modules/**", "/",
                         "/signup", "/email-token", "/image/**")
                         .permitAll()
+                .requestMatchers(request -> request.getRequestURI().matches("/study/\\d+")).permitAll()
                 .anyRequest().authenticated())
                 .formLogin(login -> login
                         .loginPage("/login")
@@ -35,11 +36,11 @@ public class DefaultSecurityConfig {
                 )
                 .logout(logout -> logout
                         .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
-                        .logoutSuccessUrl("/")
+                        .logoutSuccessUrl("/main")
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID"))
-                .anonymous(AbstractHttpConfigurer::disable)
-                .csrf(c -> c.ignoringRequestMatchers("/profile"));
+                .anonymous(AbstractHttpConfigurer::disable);
+                //.csrf(csrf -> csrf.ignoringRequestMatchers("/study"));
 
         return http.build();
     }
