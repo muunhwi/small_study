@@ -146,7 +146,7 @@ public class StudyValidator {
         }
 
         for (MemberAnswerDTO answer : answers) {
-            if(Objects.isNull(answer) ||  answer.answerItemIds.isEmpty()) {
+            if(Objects.isNull(answer) ||  (answer.text.isBlank() && answer.answerItemIds.isEmpty())) {
                 error.put("error_answer", messageSource.getMessage("invalid.member.form.answer", null, Locale.getDefault()));
                 return false;
             }

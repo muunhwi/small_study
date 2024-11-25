@@ -102,13 +102,8 @@ public class StudyApplyController {
         ResponseEntity<Map<String, String>> errors = validMemberStudyDTO(memberStudy);
         if (errors != null) return errors;
 
-        if(Objects.isNull(memberStudy.getMemberId()) || Objects.isNull(member)) {
+        if(Objects.isNull(member)) {
             log.info("studyApplyPost memberId is null");
-            throw new BadRequestException();
-        }
-
-        if(!memberStudy.getMemberId().equals(member.getId())) {
-            log.info("studyApplyPost AccessMemberId != memberStudy.memberId");
             throw new BadRequestException();
         }
 

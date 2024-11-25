@@ -33,18 +33,6 @@ public class StudyFormController {
         return "smallstudy/study_form/study_form";
     }
 
-    @GetMapping("/study/form/edit")
-    public String studyFormEdit(@RequestParam("formId") Long formId,
-                                @AuthenticationPrincipal CustomUser member,
-                                Model model)  {
-
-        Study study = studyFormService.findStudyByFormId(formId);
-        GlobalValidationService.isAuthor(study.getMember().getId(), member.getId());
-        StudyFormDTO dto = studyFormService.toStudyFormDTO(study.getStudyForm(), study.getId());
-        model.addAttribute("form",  JsonConverter.getJsonData(dto));
-
-        return "smallstudy/study_form/study_form_update";
-    }
 
     @GetMapping("/study/form/view")
     public String studyFormView(@RequestParam("formId") Long formId,
@@ -59,11 +47,6 @@ public class StudyFormController {
         return "smallstudy/study_form/study_form_sample";
     }
 
-    @GetMapping("/study/form/delete")
-    public String deleteForm(@RequestParam("studyId") Long studyId) {
-        studyFormService.deleteForm(studyId);
-        return "redirect:/study/" + studyId;
-    }
 
     @PostMapping("/study/form")
     public ResponseEntity<Map<String, String>> submitForm(@RequestBody StudyFormDTO form) {
@@ -72,16 +55,6 @@ public class StudyFormController {
         if (errors != null) return errors;
 
         Long studyId = studyFormService.save(form);
-        return ResponseEntity.ok(Map.of("studyId", String.valueOf(studyId)));
-    }
-
-    @PostMapping("/study/form/edit")
-    public ResponseEntity<Map<String, String>> submitFormEdit(@RequestBody StudyFormDTO form) {
-
-        ResponseEntity<Map<String, String>> errors = validStudyFormDTO(form);
-        if (errors != null) return errors;
-
-        Long studyId = studyFormService.editForm(form);
         return ResponseEntity.ok(Map.of("studyId", String.valueOf(studyId)));
     }
 
